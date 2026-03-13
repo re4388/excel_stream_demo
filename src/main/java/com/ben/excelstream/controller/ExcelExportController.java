@@ -49,4 +49,19 @@ public class ExcelExportController {
          exportService.exportStreaming(outputStream, fileName, count);
       };
    }
+
+   @GetMapping("/export/multi-sheet")
+   public StreamingResponseBody multiSheetEndpoint(
+         @RequestParam(defaultValue = "multi-sheet.xlsx") String fileName,
+         @RequestParam(defaultValue = "1000") int count,
+         @RequestParam(defaultValue = "3") int sheetCount,
+         HttpServletResponse response) {
+
+      response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+
+      return outputStream -> {
+         exportService.exportMultiSheet(outputStream, count, sheetCount);
+      };
+   }
 }

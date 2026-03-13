@@ -28,16 +28,19 @@ public class ExportService {
    }
 
    public void exportStreaming(OutputStream os, String fileName, int rowCount) throws IOException {
+      exportMultiSheet(os, rowCount, 1);
+   }
+
+   public void exportMultiSheet(OutputStream os, int rowCount, int sheetCount) throws IOException {
       // Window size of 100
       try (SXSSFWorkbook wb = new SXSSFWorkbook(100)) {
-         Sheet sheet = wb.createSheet("Data");
-         createHeader(sheet);
-         for (int i = 0; i < rowCount; i++) {
-            ExcelDataRow data = generateData(i);
-            createRow(sheet, i + 1, data);
-
-            // SXSSFWorkbook will automatically flush rows to disk
-            // once the row access window (100) is exceeded.
+         for (int s = 1; s <= sheetCount; s++) {
+            Sheet sheet = wb.createSheet("Sheet-" + s);
+            createHeader(sheet);
+            for (int i = 0; i < rowCount; i++) {
+               ExcelDataRow data = generateData(i);
+               createRow(sheet, i + 1, data);
+            }
          }
          // Final write to the HTTP response output stream
          wb.write(os);
